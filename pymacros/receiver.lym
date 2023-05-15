@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>The New Macro</description>
+ <version/>
+ <category/>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>true</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>python</interpreter>
+ <dsl-interpreter-name/>
+ <text>import paho.mqtt.client as mqtt
+
+import json
+import requests
+import pathlib
+import os
+import tempfile
+import socket
+import time
+
+def on_message(client, userdata, message):
+      
+      payload = str(message.payload.decode("utf-8"))
+      print("message received " , payload)
+      print("message topic=",message.topic)
+      print("message qos=",message.qos)
+      print("message retain flag=",message.retain)
+      data = json.loads(payload)
+      r = requests.get("http://localhost:8084/gds/")
+      filename = pathlib.Path(data["gds"]).name
+      fullpath = pathlib.Path(tmpdirname)/filename
+      open(fullpath, 'wb').write(r.content)
+      data["gds"] = str(fullpath)
+
+      data_string = json.dumps(data)
+      try:
+          conn = socket.create_connection(("127.0.0.1", 8082), timeout=1.0)
+          data_string = data_string + "\n"
+          data_string = (
+              data_string.encode() if hasattr(data_string, "encode") else data_string
+          )
+          print(f"forward with {data_string}")
+          conn.sendall(data_string)
+          conn.close()
+      except OSError:
+          print("OSError")
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    client.subscribe("klive")
+    
+def on_disconnect(client, userdata,rc=0):
+    print("DisConnected result code "+str(rc))
+    client.loop_stop()
+    
+
+tmpdirname = tempfile.TemporaryDirectory().name
+print(tmpdirname)
+os.makedirs(tmpdirname)
+
+client = mqtt.Client("klayout-receiver")
+client.on_connect = on_connect
+client.on_message = on_message
+client.on_disconnect = on_disconnect
+
+client.connect("localhost", 1883, 60)
+
+timer=pya.QTimer()
+timer.timeout = client.loop
+timer.start(500)</text>
+</klayout-macro>
