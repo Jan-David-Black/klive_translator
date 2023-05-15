@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <salt-grain>
- <name>klive_translator</name>
+ <name>klive_mqtt_translator</name>
  <token/>
  <hidden>false</hidden>
  <version>0.0.1</version>
  <api-version/>
  <title>Klive Translator</title>
- <doc>This template provides a Python macro to translate from mqtt to tcp for the klive package</doc>
+ <doc>A Python macro to translate from mqtt to tcp for the klive package</doc>
  <doc-url>doc/readme.html</doc-url>
  <url/>
  <license>GPLv3</license>
