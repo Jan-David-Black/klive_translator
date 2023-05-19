@@ -3,7 +3,7 @@
  <name>klive_mqtt_translator</name>
  <token/>
  <hidden>false</hidden>
- <version>0.0.1</version>
+ <version>0.0.2</version>
  <api-version/>
  <title>Klive Translator</title>
  <doc>A Python macro to translate from mqtt to tcp for the klive package</doc>
